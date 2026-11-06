@@ -40,26 +40,27 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Date Navigation
-  document.getElementById('prev-day-btn').addEventListener('click', () => changeDate(-1));
-  document.getElementById('next-day-btn').addEventListener('click', () => changeDate(1));
-  document.getElementById('today-jump-btn').addEventListener('click', () => {
+  // Date Navigation
+    document.getElementById('prev-day-btn')?.addEventListener('click', () => changeDate(-1));
+    document.getElementById('next-day-btn')?.addEventListener('click', () => changeDate(1));
+    document.getElementById('today-jump-btn')?.addEventListener('click', () => {
     currentDate = new Date();
     loadDashboardData();
-  });
+});
 
-  // Sync Button
-  document.getElementById('sync-btn').addEventListener('click', async () => {
+    // Sync Button
+    document.getElementById('sync-btn')?.addEventListener('click', async () => {
     const user = getCurrentUser();
     if (!user) return;
     const dateStr = formatDateString(currentDate);
     try {
-      currentEvents = await synchronizeDay(user.uid, dateStr, setSyncBadgeStatus);
-      refreshDashboardView();
-      showToast('Calendar synchronized successfully', 'success');
+        currentEvents = await synchronizeDay(user.uid, dateStr, setSyncBadgeStatus);
+        refreshDashboardView();
+        showToast('Calendar synchronized successfully', 'success');
     } catch (err) {
-      showToast('Failed to synchronize calendar', 'error');
+        // error handler
     }
-  });
+});
 
   // Settings & Modals
   initSettingsModal(
