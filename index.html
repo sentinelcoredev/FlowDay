@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FLOWDAY — Execution Dashboard</title>
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/themes.css">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/animations.css">
+  
+  <!-- Google Identity Services -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+  <div id="app" class="app-container">
+    <!-- Auth Screen -->
+    <div id="auth-screen" class="screen active">
+      <div class="auth-card">
+        <div class="brand-badge">FLOWDAY</div>
+        <h1>Personal Execution Dashboard</h1>
+        <p>Connect your Google account and track real daily execution against your calendar.</p>
+        <button id="google-signin-btn" class="primary-btn">
+          <svg class="google-icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.13 0-5.78-2.11-6.73-4.96H1.18v3.15C3.15 21.32 7.22 24 12 24z"/><path fill="#FBBC05" d="M5.27 14.24c-.25-.72-.38-1.49-.38-2.24s.13-1.52.38-2.24V6.6H1.18C.43 8.13 0 9.87 0 11.7s.43 3.57 1.18 5.1l4.09-2.56z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.22 0 3.15 2.68 1.18 6.6l4.09 3.15c.95-2.85 3.6-4.96 6.73-4.96z"/></svg>
+          Sign in with Google
+        </button>
+        <div id="auth-error" class="error-message hidden"></div>
+      </div>
+    </div>
+    
+
+    <!-- Dashboard Screen -->
+    <div id="dashboard-screen" class="screen">
+      <!-- Header -->
+      <header class="app-header">
+  <div class="header-left">
+    <h1 class="app-title">FLOWDAY</h1>
+  </div>
+  <div class="header-center">
+    <!-- Your date navigation container/buttons -->
+    <div class="date-navigator">
+      <button id="prev-day-btn" class="icon-btn">&lt;</button>
+      <span id="current-date-display">Fri, Nov 6</span>
+      <button id="next-day-btn" class="icon-btn">&gt;</button>
+      <button id="today-btn" class="secondary-btn">Today</button>
+    </div>
+  </div>
+  <div class="header-right">
+    <div id="sync-status-badge" class="status-badge idle">Synced</div>
+    <button id="sync-btn" class="secondary-btn"><span class="sync-icon">⟳</span> Sync</button>
+    <button id="analytics-btn" class="icon-btn" title="Life Analytics">📊</button>
+    <button id="theme-toggle-btn" class="icon-btn" title="Toggle Theme">🌓</button>
+    <button id="settings-btn" class="icon-btn" title="Settings">⚙</button>
+  </div>
+</header>
+
+      <!-- Main Content -->
+      <main class="dashboard-main">
+        <!-- Progress Section -->
+        <section class="progress-section">
+          <div class="progress-stats">
+            <div class="stat-item">
+              <span id="stat-total" class="stat-value">0</span>
+              <span class="stat-label">Total</span>
+            </div>
+            <div class="stat-item">
+              <span id="stat-completed" class="stat-value">0</span>
+              <span class="stat-label">Completed</span>
+            </div>
+            <div class="stat-item">
+              <span id="stat-missed" class="stat-value">0</span>
+              <span class="stat-label">Missed</span>
+            </div>
+            <div class="stat-item">
+              <span id="stat-upcoming" class="stat-value">0</span>
+              <span class="stat-label">Upcoming</span>
+            </div>
+          </div>
+          <div class="progress-bar-container">
+            <div id="progress-bar-fill" class="progress-bar-fill" style="width: 0%"></div>
+          </div>
+          <div class="progress-percentage-label"><span id="stat-percentage">0</span>% Execution Rate</div>
+        </section>
+
+        <!-- Events List Section -->
+        <section class="events-section">
+          <div class="section-header">
+            <h2>Schedule</h2>
+            <span id="timezone-label" class="timezone-label">Asia/Kolkata</span>
+          </div>
+          <div id="events-container" class="events-container">
+            <!-- Dynamic Event Cards or Skeletons -->
+          </div>
+          <div id="empty-state" class="empty-state hidden">
+            <div class="empty-icon">📅</div>
+            <h3>No events found for this day</h3>
+            <p>Click "Sync" to pull events from your Google Calendar.</p>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal-overlay hidden">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Settings</h3>
+          <button id="close-settings-btn" class="icon-btn">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="setting-group">
+            <label>Connected Account</label>
+            <div id="user-email-display" class="setting-value">Not connected</div>
+          </div>
+          <div class="setting-group">
+            <label for="timezone-select">Timezone</label>
+            <select id="timezone-select" class="select-input">
+              <option value="Asia/Kolkata">Asia/Kolkata (IST)</option>
+              <option value="UTC">UTC</option>
+              <option value="America/New_York">America/New_York (EST)</option>
+              <option value="Europe/London">Europe/London (GMT)</option>
+            </select>
+          </div>
+          <div class="setting-group checkbox-group">
+            <label class="switch">
+              <input type="checkbox" id="auto-missed-toggle" checked>
+              <span class="slider round"></span>
+            </label>
+            <span>Automatic Missed Event Detection</span>
+          </div>
+          <div class="setting-actions">
+            <button id="signout-btn" class="danger-btn">Sign Out</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Event Detail Modal -->
+    <div id="event-detail-modal" class="modal-overlay hidden">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 id="detail-title">Event Title</h3>
+          <button id="close-detail-btn" class="icon-btn">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="detail-row">
+            <strong>Time:</strong> <span id="detail-time">--:-- - --:--</span>
+          </div>
+          <div class="detail-row">
+            <strong>Duration:</strong> <span id="detail-duration">-- mins</span>
+          </div>
+          <div class="detail-row">
+            <strong>Status:</strong> <span id="detail-status" class="badge">--</span>
+          </div>
+          <div class="detail-row description-row">
+            <strong>Description:</strong>
+            <div id="detail-description" class="description-box">No description provided.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Analytics Modal -->
+<div id="analytics-modal" class="modal-overlay hidden">
+  <div class="modal-content analytics-modal-content">
+    <div class="modal-header">
+      <h3>Life Execution Analytics</h3>
+      <button id="close-analytics-btn" class="icon-btn">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="analytics-tabs">
+        <button class="tab-btn active" data-range="week">Weekly</button>
+        <button class="tab-btn" data-range="month">Monthly</button>
+        <button class="tab-btn" data-range="year">Yearly</button>
+      </div>
+      <div id="analytics-loading" class="hidden" style="text-align: center; padding: 1rem; color: var(--text-secondary);">Calculating metrics...</div>
+      <div class="progress-stats" style="margin-top: 1rem;">
+        <div class="stat-item">
+          <span id="ana-total" class="stat-value">0</span>
+          <span class="stat-label">Total</span>
+        </div>
+        <div class="stat-item">
+          <span id="ana-completed" class="stat-value">0</span>
+          <span class="stat-label">Completed</span>
+        </div>
+        <div class="stat-item">
+          <span id="ana-missed" class="stat-value">0</span>
+          <span class="stat-label">Missed</span>
+        </div>
+      </div>
+      <div class="progress-bar-container">
+        <div id="ana-progress-fill" class="progress-bar-fill" style="width: 0%"></div>
+      </div>
+      <div class="progress-percentage-label"><span id="ana-percentage">0</span>% Macro Execution Rate</div>
+    </div>
+  </div>
+</div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="toast-container"></div>
+  </div>
+
+  <!-- Application Entry -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
